@@ -1,7 +1,35 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"flag"
+	"fmt"
+	"io"
+	"os"
+)
 
 func main() {
-	fmt.Println("hello world!")
+	words := flag.Bool("w", false, "count words")
+	lines := flag.Bool("l", false, "count lines")
+	bytes := flag.Bool("b", false, "count bytes")
+	flag.Parse()
+	fmt.Println(count(os.Stdin, *words, *lines, *bytes))
+}
+
+func count(r io.Reader, words bool, lines bool, bytes bool) int {
+	scanner := bufio.NewScanner(r)
+	wc := 0
+
+	if words {
+		scanner.Split(bufio.ScanWords)
+	} else if lines {
+		scanner.Split(bufio.ScanLines)
+	} else if bytes {
+		scanner.Split(bufio.ScanBytes)
+	}
+
+	for scanner.Scan() {
+		wc += 1
+	}
+	return wc
 }
